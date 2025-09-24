@@ -1,0 +1,21 @@
+{
+    "MASTER": {
+        "client_id": "YOUR_DHAN_CLIENT_ID",
+        "access_token": "encrypted_access_token_here"
+    },
+    "CHILD": {
+        "CHILD1": {
+            "client_id": "CHILD_CLIENT_ID_1",
+            "access_token": "encrypted_access_token_here",
+            "multiplier": 1,
+            "enabled": "Y"
+        },
+        "CHILD2": {
+            "client_id": "CHILD_CLIENT_ID_2", 
+            "access_token": "encrypted_access_token_here",
+            "multiplier": 0.5,
+            "enabled": "Y"
+        }
+    },
+    "DONOTPROCESSPROD": ["BO", "CO"]
+}
