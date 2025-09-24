@@ -307,11 +307,9 @@ def map_validity(validity):
 async def start_websocket_feed(client_id, access_token):
     """Starts the websocket feed for order updates with robust reconnection."""
     uri = "wss://api-order-update.dhan.co"
-
     while True:
         try:
             async with websockets.connect(uri) as websocket:
-                # Authorize the connection
                 auth_data = {
                     "auth_token": access_token,
                     "client_id": client_id,
@@ -319,22 +317,22 @@ async def start_websocket_feed(client_id, access_token):
                     "feed_type": "order"
                 }
                 await websocket.send(json.dumps(auth_data))
-                print("WebSocket authorized. Waiting for order updates...")
-
+                print("WebSocket connection established and authorized.")
                 while True:
-                    try:
-                        message = await websocket.recv()
-                        data = json.loads(message)
-                        if data.get("type") == "order_alert":
-                            logging.info(f"Order alert received: {data['data']}")
-                            copyTrade(data['data'])
-                    except websockets.exceptions.ConnectionClosed:
-                        print("WebSocket connection closed.")
-                        break # Break inner loop to trigger reconnection
-            except Exception as e:
-                logging.error(f"Error in websocket feed: {e}")
+                    message = await websocket.recv()
+                    data = json.loads(message)
+                    if data.get("type") == "order_alert":
+                        logging.info(f"Order alert received: {data['data']}")
+                        copyTrade(data['data'])
+        except websockets.exceptions.ConnectionClosed as e:
+            print(f"WebSocket connection closed: {e}")
+            logging.warning(f"WebSocket connection closed: {e}")
+        except Exception as e:
+            print(f"An error occurred with the WebSocket: {e}")
+            logging.error(f"An error occurred with the WebSocket: {e}")
 
-        print("Reconnecting in 5 seconds...")
+        print("Attempting to reconnect in 5 seconds...")
+        logging.info("Attempting to reconnect in 5 seconds...")
         await asyncio.sleep(5)
 
 
