@@ -1,12 +1,12 @@
 import os
-import dotenv
+from dotenv import load_dotenv
 from cryptography.fernet import Fernet
 
 # Load or generate encryption key
-dotenv.load_dotenv()
+load_dotenv()
 
-if dotenv.get('key'):
-    mysecret = dotenv.get('key').encode()
+if os.environ.get('key'):
+    mysecret = os.environ.get('key').encode()
 else:
     # Generate new key for first time
     mysecret = Fernet.generate_key()
