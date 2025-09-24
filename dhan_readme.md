@@ -29,7 +29,7 @@ A Python-based automated copy trading system that replicates trades from a maste
    ```
 
 3. **Setup Configuration**:
-   - Copy `configTemplate.json` to `config.json`
+   - Copy `dhan_config_template.json` to `config.json`
    - Generate access tokens from Dhan web platform
    - Encrypt your access tokens using the encryption utility
 
@@ -47,7 +47,7 @@ A Python-based automated copy trading system that replicates trades from a maste
 ### Step 1: Generate Encryption Key and Encrypt Access Tokens
 
 ```bash
-python encryptpwd.py
+python dhan_encrypt_utility.py
 ```
 
 This will:
@@ -87,7 +87,7 @@ Edit `config.json` with your account details:
 ## Running the System
 
 ```bash
-python Autocopytrade_dhan.py
+python dhan_copytrader.py
 ```
 
 The system will:
