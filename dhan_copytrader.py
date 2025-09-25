@@ -133,8 +133,9 @@ def createTargetOrder(orderdata, client_id, targetAccnt, multiplier):
         
     except Exception as e:
         stacktrace = traceback.format_exc()
-        logging.error(f"ERROR Order create error {e} - {stacktrace}")
-        print(f"Child order not created for parent order {orderdata['OrderNo']} for user id {client_id}")
+        logging.error(f"ERROR Order create error for account {client_id}: {e} - {stacktrace}")
+        logging.error(f"Order Details: {orderdata}")
+        print(f"Child order not created for parent order {orderdata['OrderNo']} for user id {client_id}. Check logs for details.")
 
 
 def updateTargetOrders(data):
@@ -179,8 +180,9 @@ def updateTargetOrder(orderdata, client_id, targetAccnt, multiplier):
         
     except Exception as e:
         stacktrace = traceback.format_exc()
-        logging.error(f"ERROR Order update error {e} - {stacktrace}")
-        print(f"Child order not updated for parent order {orderdata['OrderNo']} for user id {client_id}")
+        logging.error(f"ERROR Order update error for account {client_id}: {e} - {stacktrace}")
+        logging.error(f"Order Details: {orderdata}")
+        print(f"Child order not updated for parent order {orderdata['OrderNo']} for user id {client_id}. Check logs for details.")
 
 
 def cancelTargetOrders(data):
@@ -238,16 +240,23 @@ def showMargin(dhan, client_id):
     """Show margin details for a specific account"""
     try:
         margin = dhan.get_fund_limits()
-        if margin['status'] == 'success':
-            funds = margin['data']
-            available = funds.get('equity_amount', 0) + funds.get('commodity_amount', 0)
-            used = funds.get('utilised_amount', 0)
-            cash = funds.get('opening_balance', 0)
+        logging.info(f"Fund limits for {client_id}: {margin}")
+
+        # Based on v2 documentation: https://dhanhq.co/docs/v2/funds/
+        # The library might return a different structure, the log will show the truth.
+        if isinstance(margin, dict):
+             # Note the typo in 'availabelBalance' as per Dhan's documentation
+            available = margin.get('availabelBalance', 0)
+            used = margin.get('utilizedAmount', 0)
+            cash = margin.get('sodLimit', 0) # Start of the day balance
             print(f"{client_id:15} : {available:12,.0f}  {used:12,.0f}  {cash:12,.0f}")
         else:
-            logging.error(f"Failed to fetch margins for {client_id}")
+            logging.error(f"Failed to fetch margins for {client_id}, unexpected response format.")
+            print(f"Could not fetch margin for {client_id}")
+
     except Exception as e:
         logging.error(f"Error fetching margins for {client_id}: {e}")
+        print(f"Error fetching margin for {client_id}")
 
 
 def map_exchange(exchange):
