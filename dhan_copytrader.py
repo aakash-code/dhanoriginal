@@ -242,16 +242,15 @@ def showMargin(dhan, client_id):
         margin = dhan.get_fund_limits()
         logging.info(f"Fund limits for {client_id}: {margin}")
 
-        # Based on v2 documentation: https://dhanhq.co/docs/v2/funds/
-        # The library might return a different structure, the log will show the truth.
-        if isinstance(margin, dict):
-             # Note the typo in 'availabelBalance' as per Dhan's documentation
-            available = margin.get('availabelBalance', 0)
-            used = margin.get('utilizedAmount', 0)
-            cash = margin.get('sodLimit', 0) # Start of the day balance
+        if margin.get('status') == 'success':
+            funds = margin.get('data', {})
+            # Note the typo in 'availabelBalance' as per Dhan's API response
+            available = funds.get('availabelBalance', 0)
+            used = funds.get('utilizedAmount', 0)
+            cash = funds.get('sodLimit', 0) # Start of the day balance
             print(f"{client_id:15} : {available:12,.0f}  {used:12,.0f}  {cash:12,.0f}")
         else:
-            logging.error(f"Failed to fetch margins for {client_id}, unexpected response format.")
+            logging.error(f"Failed to fetch margins for {client_id}. Response: {margin}")
             print(f"Could not fetch margin for {client_id}")
 
     except Exception as e:
